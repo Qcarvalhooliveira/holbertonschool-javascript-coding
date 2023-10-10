@@ -1,36 +1,31 @@
 const http = require('http');
-const students = require('./3-read_file_async');
+const countStudents = require('./3-read_file_async');
 
 const port = 1245;
 
 const app = http.createServer((req, res) => {
-  switch (req.url) {
-    case '/':
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.end('Hello Holberton School!');
-      break;
-    case '/students':
-      students(process.argv[2])
-        .then((data) => {
-          const studentData = JSON.parse(data);
-          res.writeHead(200, { 'Content-Type': 'text/plain' });
-          res.write('This is the list of our students\n');
-          res.write(`Number of students: ${studentData.count}\n`);
-          for (const cls in studentData) {
-            if (cls !== 'count') {
-              res.write(`Number of students in ${cls}: ${studentData[cls].length}. List: ${studentData[cls].join(', ')}\n`);
-            }
+  const { method, url } = req;
+  if (method === 'GET' && url === '/') {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.write('Hello Holberton School!');
+    res.end();
+  }
+  if (method === 'GET' && url === '/students') {
+    countStudents(String(process.argv.slice(2)))
+      .then((arrayOfClasses) => {
+        res.write('This is the list of our students\n');
+        for (const cls in arrayOfClasses) {
+          if (cls !== 'count') {
+            res.write(`Number of students in ${cls}: ${arrayOfClasses[cls].count}. List: ${arrayOfClasses[cls].names.join(', ')}\n`);
           }
-          res.end();
-        })
-        .catch((error) => {
-          res.writeHead(500, { 'Content-Type': 'text/plain' });
-          res.end(`Error: ${error.message}`);
-        });
-      break;
-    default:
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Resource not found' }));
+        }
+        res.end();
+      })
+      .catch((err) => {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end(`This is the list of our students\nCannot load the database\n${err.message}`);
+      });
   }
 });
 
