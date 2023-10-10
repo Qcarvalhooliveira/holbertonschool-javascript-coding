@@ -12,9 +12,15 @@ const app = http.createServer((req, res) => {
     case '/students':
       students(process.argv[2])
         .then((data) => {
+          const studentData = JSON.parse(data);
           res.writeHead(200, { 'Content-Type': 'text/plain' });
           res.write('This is the list of our students\n');
-          res.write(data);  // Writing the data directly (assuming it's plain text)
+          res.write(`Number of students: ${studentData.count}\n`);
+          for (const cls in studentData) {
+            if (cls !== 'count') {
+              res.write(`Number of students in ${cls}: ${studentData[cls].length}. List: ${studentData[cls].join(', ')}\n`);
+            }
+          }
           res.end();
         })
         .catch((error) => {
