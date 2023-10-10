@@ -10,19 +10,18 @@ const app = http.createServer((req, res) => {
       res.end('Hello Holberton School!');
       break;
     case '/students':
+      res.writeHead(200);
+      res.write('This is the list of our students\n');
       students(process.argv[2])
         .then((data) => {
-          res.writeHead(200, { 'Content-Type': 'text/plain' });
-          const studentsInfo = `This is the list of our students\n${data}`;
-          res.end(studentsInfo);
+          res.end(data);
         })
         .catch((error) => {
-          res.writeHead(500, { 'Content-Type': 'text/plain' });
           res.end(error.message);
         });
       break;
     default:
-      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.writeHead(404);
       res.end(JSON.stringify({ error: 'Resource not found' }));
   }
 });
