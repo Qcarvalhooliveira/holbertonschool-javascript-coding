@@ -14,8 +14,13 @@ const app = http.createServer(async (req, res) => {
     case '/students':
       try {
         const data = await countStudents('./database.csv');
-        const response = `This is the list of our students\n${data.join('\n')}`;
-        res.end(response);
+        if (data.length > 0) {
+          const response = `This is the list of our students\n${data.join('\n')}`;
+          res.end(response);
+        } else {
+          res.statusCode = 200;
+          res.end('No students found');
+        }
       } catch (error) {
         res.statusCode = 500;
         res.end(`Error: ${error.message}`);
