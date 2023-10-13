@@ -15,7 +15,7 @@ const app = http.createServer(async (req, res) => {
       try {
         const data = await countStudents('./database.csv');
         if (data.length > 0) {
-          const response = `This is the list of our students\n${data.join('\n')}`;
+          const response = `This is the list of our students\nNumber of students: ${data.length}\n${data.join('\n')}`;
           res.end(response);
         } else {
           res.statusCode = 200;
