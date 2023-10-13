@@ -7,27 +7,30 @@ function countStudents(path) {
         reject(new Error('Cannot load the database'));
       } else {
         const lines = data.split('\n').filter((line) => line.trim() !== '');
-        const counters = {};
+        if (lines.length === 1 && lines[0].trim() === '') {
+          resolve([]); // Database is empty
+        } else {
+          const counters = {};
 
-        for (let i = 1; i < lines.length; i += 1) {
-          const [firstName, , , field] = lines[i].split(',');
-          if (field) {
-            counters[field] = counters[field] || { count: 0, names: [] };
-            counters[field].count += 1;
-            counters[field].names.push(firstName.trim());
+          for (let i = 1; i < lines.length; i += 1) {
+            const [firstName, , , field] = lines[i].split(',');
+            if (field) {
+              counters[field] = counters[field] || { count: 0, names: [] };
+              counters[field].count += 1;
+              counters[field].names.push(firstName.trim());
+            }
           }
-        }
 
-        console.log(`Number of students: ${lines.length - 1}`);
-        for (const field in counters) {
-          if (Object.prototype.hasOwnProperty.call(counters, field)) {
-            console.log(`Number of students in ${field}: ${counters[field].count}. List: ${counters[field].names.join(', ')}`);
-          }
+          const studentsInfo = Object.keys(counters).map((field) => {
+            return `Number of students in ${field}: ${counters[field].count}. List: ${counters[field].names.join(', ')}`;
+          });
+
+          resolve(studentsInfo);
         }
-        resolve();
       }
     });
   });
 }
 
 module.exports = countStudents;
+
