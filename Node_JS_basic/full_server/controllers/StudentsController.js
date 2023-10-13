@@ -4,7 +4,8 @@ class StudentsController {
   static async getAllStudents(req, res) {
     try {
       const database = await readDatabase('./database.csv');
-     
+      const responseData = `This is the list of our students\nNumber of students in CS: ${database.inFields.CS.counter}. List: ${database.inFields.CS.students}\nNumber of students in SWE: ${database.inFields.SWE.counter}. List: ${database.inFields.SWE.students}`;
+      res.status(200).send(responseData);
     } catch (error) {
       res.status(500).send('Cannot load the database');
     }
@@ -19,9 +20,13 @@ class StudentsController {
 
     try {
       const database = await readDatabase('./database.csv');
+      const responseData = `List: ${database.inFields[major].students}`;
+      res.status(200).send(responseData);
     } catch (error) {
       res.status(500).send('Cannot load the database');
     }
+
+    return undefined;
   }
 }
 
