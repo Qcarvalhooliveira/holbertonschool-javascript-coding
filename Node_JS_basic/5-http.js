@@ -3,25 +3,25 @@ const students = require('./3-read_file_async');
 
 const port = 1245;
 
-const app = http.createServer((req, res) => {
+const app = http.createServer(async (req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+
   switch (req.url) {
     case '/':
-      res.writeHead(200);
       res.end('Hello Holberton School!');
       break;
     case '/students':
-      res.writeHead(200);
-      res.write('This is the list of our students\n');
-      students(process.argv[2])
-        .then((data) => {
-          res.end(data);
-        })
-        .catch((error) => {
-          res.end(error.message);
-        });
+      try {
+        const data = await students(process.argv[2]);
+        res.end(`This is the list of our students\n${data}`);
+      } catch (error) {
+        res.statusCode = 500;
+        res.end(`Error: ${error.message}`);
+      }
       break;
     default:
-      res.writeHead(404);
+      res.statusCode = 404;
       res.end(JSON.stringify({ error: 'Resource not found' }));
   }
 });
