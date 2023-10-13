@@ -1,5 +1,5 @@
 const http = require('http');
-const students = require('./3-read_file_async');
+const countStudents = require('./3-read_file_async');
 
 const port = 1245;
 
@@ -13,8 +13,9 @@ const app = http.createServer(async (req, res) => {
       break;
     case '/students':
       try {
-        const data = await students(process.argv[2]);
-        res.end(`This is the list of our students\n${data}`);
+        const data = await countStudents('./database.csv');
+        const response = `This is the list of our students\n${data.join('\n')}`;
+        res.end(response);
       } catch (error) {
         res.statusCode = 500;
         res.end(`Error: ${error.message}`);
